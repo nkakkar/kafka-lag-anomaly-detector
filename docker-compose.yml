@@ -1,0 +1,18 @@
+version: "3"
+services:
+  prometheus:
+    image: prom/prometheus
+    ports: ["9090:9090"]
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  alertmanager:
+    image: prom/alertmanager
+    ports: ["9093:9093"]
+  detector:
+    build: .
+    environment:
+      - PROMETHEUS_BASE_URL=http://prometheus:9090
+      - ALERTMANAGER_WEBHOOK_URL=http://alertmanager:9093/api/v1/alerts
+    depends_on:
+      - prometheus
+      - alertmanager
